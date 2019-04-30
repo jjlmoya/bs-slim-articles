@@ -9,11 +9,13 @@ const {registerBlockType} = wp.blocks;
 const {SelectControl, TextControl} = wp.components;
 const {withSelect} = wp.data;
 registerBlockType('bonseo/block-bs-slim-articles', {
-	title: __('Artículos con Avatar'),
+	title: __('Artículos Slim'),
 	icon: 'editor-quote',
 	category: 'bonseo-blocks',
 	keywords: [
-		__('articles-avatar'),
+		__('articles-slim'),
+		__('slim'),
+		__('bs'),
 		__('BonSeo'),
 		__('BonSeo Block'),
 	],
@@ -40,7 +42,7 @@ registerBlockType('bonseo/block-bs-slim-articles', {
 
 		return (
 			<div>
-				<h2>Artículos Avatar2</h2>
+				<h2>Artícles Slim</h2>
 				<TextControl
 					className={`${className}__title`}
 					label={__('Elige título:')}

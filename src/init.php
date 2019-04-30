@@ -13,7 +13,7 @@ if (!defined('ABSPATH')) {
 	exit;
 }
 
-$block = 'block-bs-articles-avatar';
+$block = 'block-bs-articles-slim';
 
 // Hook server side rendering into render callback
 register_block_type('bonseo/' . $block,
@@ -35,16 +35,16 @@ register_block_type('bonseo/' . $block,
 				'type' => 'string',
 			)
 		),
-		'render_callback' => 'render_bs_articles_avatar',
+		'render_callback' => 'render_bs_articles_slim',
 	)
 );
 
 
-function bs_articles_avatar_editor_assets()
+function bs_articles_slim_editor_assets()
 { // phpcs:ignore
 	// Scripts.
 	wp_enqueue_script(
-		'bs_articles_avatar-block-js', // Handle.
+		'bs_articles_slim-block-js', // Handle.
 		plugins_url('/dist/blocks.build.js', dirname(__FILE__)), // Block.build.js: We register the block here. Built with Webpack.
 		array('wp-blocks', 'wp-i18n', 'wp-element', 'wp-editor'), // Dependencies, defined above.
 		// filemtime( plugin_dir_path( __DIR__ ) . 'dist/blocks.build.js' ), // Version: File modification time.
@@ -52,43 +52,31 @@ function bs_articles_avatar_editor_assets()
 	);
 }
 
-function render_bs_articles_avatar_render($posts)
+function render_bs_articles_slim_render($posts)
 {
 	$html = '';
 	while ($posts->have_posts()) : $posts->the_post();
 		$title = get_the_title();
 		$excerpt = get_the_excerpt(get_the_ID());
-		$content = isset($excerpt) ? $excerpt : get_the_content();
+		$content = isset($excerpt) ? $excerpt : wp_trim_words(get_the_content(), 20, '...');
 		$image = esc_url(get_the_post_thumbnail_url(get_the_ID()));
 		$url = esc_url(get_the_permalink());
-		$brand = get_post_meta(get_the_ID(), 'bs_theme_brand', TRUE);
-		$brand = isset($brand) ? $brand : '';
 		$html .= '
-			<div class="ml-article-avatar l-column--1-2 l-column--mobile--1-1 a-pad l-flex l-flex--align-center ' . $brand . '">
-				<a href="' . $url . '" class="ml-article-avatar__picture u-pointer">
-					<picture class="">
-						<img class="a-bg--light a-image a-image--avatar a-image--avatar--xl
-									a-border a-border--fat a-border--light
-									ml-article-avatar__image 
-									u-shadow u-shadow--bottom " 
-						src="' . $image . '">
-					</picture>
-				</a>
-				<div class="ml-article-avatar__content l-column--1-1 l-flex l-flex--direction-column l-flex--justify-center l-flex--align-center a-bg">
-					<a href="' . $url . '" class="a-text a-text--underline a-text--bold a-text--sm a-text--link a-text--secondary ml-article-avatar__title">
-						' . $title . '
-					</a>
-					<p class="a-text a-pad--y a-text--secondary">
-						' . wp_trim_words($content, 15, '...') . '
-					</p>
-				</div>
-			</div>';
+			<article class="ml-article-slim l-flex l-flex--direction-column l-column--1-3 l-column--mobile--1-2 a-pad">
+				<picture class="l-column--1-1 a-pad-0">
+					<img data-target="" class="a-image l-column--1-1" src="' . $image . '">
+				</picture>   
+				<a href="' . $url . '" class="a-text a-text--link a-text--underline a-text--bold a-text--s a-text--link a-text--brand">' . $title . '</a>    
+				<p class="a-text a-text--xs">
+					' . $content . '
+				</p>
+			</article>';
 		unset($post);
 	endwhile;
 	return $html;
 }
 
-function render_bs_articles_avatar($attributes)
+function render_bs_articles_slim($attributes)
 {
 	$class = isset($attributes['className']) ? ' ' . $attributes['className'] : '';
 	$max_entries = isset($attributes['max_entries']) ? $attributes['max_entries'] : 6;
@@ -108,15 +96,14 @@ function render_bs_articles_avatar($attributes)
 	}
 
 	return '
-	<section class="og-articles-avatar ' . $class . '">
-		<h2 class="a-text a-text--xl  a-text--center a-pad-20">
+	<section class="og-articles--slim a-mi a-mi--left bs_viewport a-pad--y-20 ' . $class . '">
+		<h3 class="a-text  l-column--1-1 a-text--center a-text--brand">
 			' . $title . '
-		</h2>
-		<div class="og-article-avatar__list l-flex l-flex--wrap l-flex--justify-center a-pad">
-			' . render_bs_articles_avatar_render($posts) . '
+		</h3>    
+		<div class="og-articles--slim__container l-flex l-flex--wrap l-flex--justify-center a-pad">
+			  ' . render_bs_articles_slim_render($posts) . '
 		</div>
-	</section>
-	';
+	</section>';
 }
 
-add_action('enqueue_block_editor_assets', 'bs_articles_avatar_editor_assets');
+add_action('enqueue_block_editor_assets', 'bs_articles_slim_editor_assets');
